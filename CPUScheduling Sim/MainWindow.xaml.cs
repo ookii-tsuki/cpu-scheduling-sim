@@ -27,11 +27,11 @@ namespace CPUScheduling_Sim
         {
             InitializeComponent();
 
-            Scheduler.Processes.Add(new Process { PID = 1, ArriveTime = TimeSpan.FromMinutes(4), CPUTime = TimeSpan.FromMinutes(5), Priority = 1 });
-            Scheduler.Processes.Add(new Process { PID = 2, ArriveTime = TimeSpan.FromMinutes(6), CPUTime = TimeSpan.FromMinutes(4), Priority = 3 });
-            Scheduler.Processes.Add(new Process { PID = 3, ArriveTime = TimeSpan.Zero, CPUTime = TimeSpan.FromMinutes(3), Priority = 2 });
-            Scheduler.Processes.Add(new Process { PID = 4, ArriveTime = TimeSpan.FromMinutes(6), CPUTime = TimeSpan.FromMinutes(2), Priority = 5 });
-            Scheduler.Processes.Add(new Process { PID = 5, ArriveTime = TimeSpan.FromMinutes(5), CPUTime = TimeSpan.FromMinutes(4), Priority = 4 });
+            Scheduler.Processes.Add(new Process { PID = 1, ArriveTime = TimeSpan.FromMilliseconds(4), CPUTime = TimeSpan.FromMilliseconds(5), Priority = 1 });
+            Scheduler.Processes.Add(new Process { PID = 2, ArriveTime = TimeSpan.FromMilliseconds(6), CPUTime = TimeSpan.FromMilliseconds(4), Priority = 3 });
+            Scheduler.Processes.Add(new Process { PID = 3, ArriveTime = TimeSpan.Zero, CPUTime = TimeSpan.FromMilliseconds(3), Priority = 2 });
+            Scheduler.Processes.Add(new Process { PID = 4, ArriveTime = TimeSpan.FromMilliseconds(6), CPUTime = TimeSpan.FromMilliseconds(2), Priority = 5 });
+            Scheduler.Processes.Add(new Process { PID = 5, ArriveTime = TimeSpan.FromMilliseconds(5), CPUTime = TimeSpan.FromMilliseconds(4), Priority = 4 });
 
             
             DataContext = this;
@@ -55,8 +55,8 @@ namespace CPUScheduling_Sim
             foreach (var item in chart)
                 processStack.Children.Add(item);
 
-            avgWaitingTime.Text = $"Average Waiting Time: {processes.AverageWaitingTime}";
-            avgTurnAroundTime.Text = $"Average Turn Around Time: { processes.AverageTurnAroundTime}";
+            avgWaitingTime.Text = $"Average Waiting Time: {processes.AverageWaitingTime.TotalMilliseconds}ms";
+            avgTurnAroundTime.Text = $"Average Turn Around Time: { processes.AverageTurnAroundTime.TotalMilliseconds}ms";
         }
 
         private void addProcess_Click(object sender, RoutedEventArgs e)
@@ -66,12 +66,31 @@ namespace CPUScheduling_Sim
 
         private void dialog_AddProcess_Click(object sender, RoutedEventArgs e)
         {
+            float arriveTime, cpuTime;
+            int priority;
+
+            if (!float.TryParse(arriveTimeTB.Text, out arriveTime))
+            {
+                MessageBox.Show("Arrive Time is invalid");
+                return;
+            }
+            if(!float.TryParse(cpuTimeTB.Text, out cpuTime))
+            {
+                MessageBox.Show("CPU Time is invalid");
+                return;
+            }
+            if(!int.TryParse(priorityTB.Text, out priority))
+            {
+                MessageBox.Show("Priority is invalid");
+                return;
+            }
+
             Process process = new Process
             {
                 PID = Scheduler.Processes.Count + 1,
-                ArriveTime = TimeSpan.FromMinutes(float.Parse(arriveTimeTB.Text)),
-                CPUTime = TimeSpan.FromMinutes(float.Parse(cpuTimeTB.Text)),
-                Priority = int.Parse(priorityTB.Text)
+                ArriveTime = TimeSpan.FromMilliseconds(arriveTime),
+                CPUTime = TimeSpan.FromMilliseconds(cpuTime),
+                Priority = priority
             };
             Scheduler.Processes.Add(process);
 

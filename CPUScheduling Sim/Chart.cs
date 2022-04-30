@@ -30,22 +30,22 @@ namespace CPUScheduling_Sim
 
                 rectangle.Fill = new SolidColorBrush(c);
 
-                TextBlock textBlock = new TextBlock();
+                TextBlock cpuTime = new TextBlock();
 
-                textBlock.Text = $"{Scheduler.FindCompletionTime(processes, i).TotalMinutes}min\n{process.CPUTime.ToString(@"mm\:ss")}";
-                textBlock.HorizontalAlignment = HorizontalAlignment.Center;
-                textBlock.VerticalAlignment = VerticalAlignment.Center;
-                textBlock.TextAlignment = TextAlignment.Center;
+                cpuTime.Text = $"P{process.PID}\n{process.CPUTime.TotalMilliseconds}ms";
+                cpuTime.HorizontalAlignment = HorizontalAlignment.Center;
+                cpuTime.VerticalAlignment = VerticalAlignment.Center;
+                cpuTime.TextAlignment = TextAlignment.Center;
 
-                TextBlock pid = new TextBlock();
-                pid.HorizontalAlignment = HorizontalAlignment.Left;
-                pid.VerticalAlignment = VerticalAlignment.Top;
-                pid.Margin = new Thickness(3, 3, 0, 0);
-                pid.Text = $"P{process.PID}";
+                TextBlock ct = new TextBlock();
+                ct.HorizontalAlignment = HorizontalAlignment.Right;
+                ct.VerticalAlignment = VerticalAlignment.Top;
+                ct.Margin = new Thickness(0, 3, 5, 0);
+                ct.Text = $"{Scheduler.FindCompletionTime(processes, i).Milliseconds}";
 
                 grid.Children.Add(rectangle);
-                grid.Children.Add(textBlock);
-                grid.Children.Add(pid);
+                grid.Children.Add(cpuTime);
+                grid.Children.Add(ct);
 
                 grids.Add(grid);
             }
