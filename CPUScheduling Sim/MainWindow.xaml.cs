@@ -29,7 +29,7 @@ namespace CPUScheduling_Sim
 
             Scheduler.Processes.Add(new Process { PID = 1, ArriveTime = TimeSpan.Zero, CPUTime = TimeSpan.FromMilliseconds(11), Priority = 2 });
             Scheduler.Processes.Add(new Process { PID = 2, ArriveTime = TimeSpan.FromMilliseconds(5), CPUTime = TimeSpan.FromMilliseconds(28), Priority = 0 });
-            Scheduler.Processes.Add(new Process { PID = 3, ArriveTime = TimeSpan.FromMilliseconds(12), CPUTime = TimeSpan.FromMilliseconds(2), Priority = 3 });
+            Scheduler.Processes.Add(new Process { PID = 3, ArriveTime = TimeSpan.FromMilliseconds(12), CPUTime = TimeSpan.FromMilliseconds(7), Priority = 3 });
             Scheduler.Processes.Add(new Process { PID = 4, ArriveTime = TimeSpan.FromMilliseconds(2), CPUTime = TimeSpan.FromMilliseconds(10), Priority = 1 });
             Scheduler.Processes.Add(new Process { PID = 5, ArriveTime = TimeSpan.FromMilliseconds(9), CPUTime = TimeSpan.FromMilliseconds(16), Priority = 4 });
 
@@ -60,26 +60,31 @@ namespace CPUScheduling_Sim
         }
 
         private void addProcess_Click(object sender, RoutedEventArgs e)
-        {
+        {            
+            arriveTimeTB.Text = cpuTimeTB.Text = priorityTB.Text = string.Empty;
             addDialogBox.IsOpen = true;
         }
 
         private void dialog_AddProcess_Click(object sender, RoutedEventArgs e)
         {
+            AddProcess();
+        }
+        void AddProcess()
+        {
             float arriveTime, cpuTime;
             int priority;
 
-            if (!float.TryParse(arriveTimeTB.Text, out arriveTime))
+            if (!float.TryParse(arriveTimeTB.Text, out arriveTime) || arriveTime < 0)
             {
                 MessageBox.Show("Arrive Time is invalid");
                 return;
             }
-            if(!float.TryParse(cpuTimeTB.Text, out cpuTime))
+            if (!float.TryParse(cpuTimeTB.Text, out cpuTime) || cpuTime < 0)
             {
                 MessageBox.Show("CPU Time is invalid");
                 return;
             }
-            if(!int.TryParse(priorityTB.Text, out priority))
+            if (!int.TryParse(priorityTB.Text, out priority) || priority < 0)
             {
                 MessageBox.Show("Priority is invalid");
                 return;
@@ -87,7 +92,7 @@ namespace CPUScheduling_Sim
 
             Process process = new Process
             {
-                PID = Scheduler.Processes.Count + 1,
+                PID = Scheduler.Processes.Count > 0 ? Scheduler.Processes[Scheduler.Processes.Count - 1].PID + 1 : 1,
                 ArriveTime = TimeSpan.FromMilliseconds(arriveTime),
                 CPUTime = TimeSpan.FromMilliseconds(cpuTime),
                 Priority = priority
@@ -98,8 +103,8 @@ namespace CPUScheduling_Sim
             Calculate();
 
             addDialogBox.IsOpen = false;
-        }
 
+        }
         private void dialog_Cancel_Click(object sender, RoutedEventArgs e)
         {
             addDialogBox.IsOpen = false;
@@ -121,6 +126,7 @@ namespace CPUScheduling_Sim
 
             avgWaitingTime.Text = "Average Waiting Time:";
             avgTurnAroundTime.Text = "Average Turn Around Time:";
+            
         }
 
         private void processTable_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -133,6 +139,12 @@ namespace CPUScheduling_Sim
 
             processTable.Items.Refresh();
             Calculate();
+        }
+
+        private void addBtn_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+                AddProcess();
         }
     }
 }

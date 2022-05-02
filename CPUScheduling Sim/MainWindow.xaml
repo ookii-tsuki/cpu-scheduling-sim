@@ -49,11 +49,11 @@
                 <Grid Margin="16">
                     <TextBlock Text="Add Process" FontSize="16" HorizontalAlignment="Left"></TextBlock>
                     <TextBlock Text="Arrive Time (ms)" FontSize="13" HorizontalAlignment="Left" Margin="0,30,0,0"/>
-                    <TextBox x:Name="arriveTimeTB" VerticalAlignment="Top" Margin="0,40,0,0"></TextBox>
+                    <TextBox x:Name="arriveTimeTB" VerticalAlignment="Top" Margin="0,40,0,0" PreviewKeyDown="addBtn_PreviewKeyDown"></TextBox>
                     <TextBlock Text="CPU Time (ms)" FontSize="13" HorizontalAlignment="Left" Margin="0,80,0,0"/>
-                    <TextBox x:Name="cpuTimeTB" VerticalAlignment="Top" Margin="0,90,0,0"></TextBox>
-                    <TextBlock Text="Priority" FontSize="13" HorizontalAlignment="Left" Margin="0,130,0,0"/>
-                    <TextBox x:Name="priorityTB" VerticalAlignment="Top" Margin="0,140,0,0"></TextBox>
+                    <TextBox x:Name="cpuTimeTB" VerticalAlignment="Top" Margin="0,90,0,0" PreviewKeyDown="addBtn_PreviewKeyDown"></TextBox>
+                    <TextBlock Text="Priority (0 is the highest)" FontSize="13" HorizontalAlignment="Left" Margin="0,130,0,0"/>
+                    <TextBox x:Name="priorityTB" VerticalAlignment="Top" Margin="0,140,0,0" PreviewKeyDown="addBtn_PreviewKeyDown"></TextBox>
                     <StackPanel Orientation="Horizontal">
                         <Button x:Name="dialog_AddProcess" Content="Add Process" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left" Margin="10,263,0,0" VerticalAlignment="Bottom" Click="dialog_AddProcess_Click"/>
                         <Button x:Name="dialog_Cancel" Content="Cancel" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left" Margin="10,263,0,0" VerticalAlignment="Bottom" Click="dialog_Cancel_Click"/>
