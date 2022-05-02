@@ -36,7 +36,8 @@
             <ComboBoxItem>First Come First Serve</ComboBoxItem>
             <ComboBoxItem>Shortest Job First (Preemptive)</ComboBoxItem>
             <ComboBoxItem>Shortest Job First (Non-Preemptive)</ComboBoxItem>
-            <ComboBoxItem>Priority</ComboBoxItem>
+            <ComboBoxItem>Priority (Preemptive)</ComboBoxItem>
+            <ComboBoxItem>Priority (Non-Preemptive)</ComboBoxItem>
             <ComboBoxItem>Round-Robin</ComboBoxItem>
         </ComboBox>
         <Button x:Name="clearBtn" Content="Clear List" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Right" Margin="0,263,10,0" VerticalAlignment="Top" Grid.Column="1" Click="clearBtn_Click"/>

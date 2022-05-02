@@ -27,11 +27,11 @@ namespace CPUScheduling_Sim
         {
             InitializeComponent();
 
-            Scheduler.Processes.Add(new Process { PID = 1, ArriveTime = TimeSpan.FromMilliseconds(4), CPUTime = TimeSpan.FromMilliseconds(5), Priority = 1 });
-            Scheduler.Processes.Add(new Process { PID = 2, ArriveTime = TimeSpan.FromMilliseconds(6), CPUTime = TimeSpan.FromMilliseconds(4), Priority = 3 });
-            Scheduler.Processes.Add(new Process { PID = 3, ArriveTime = TimeSpan.Zero, CPUTime = TimeSpan.FromMilliseconds(3), Priority = 2 });
-            Scheduler.Processes.Add(new Process { PID = 4, ArriveTime = TimeSpan.FromMilliseconds(6), CPUTime = TimeSpan.FromMilliseconds(2), Priority = 5 });
-            Scheduler.Processes.Add(new Process { PID = 5, ArriveTime = TimeSpan.FromMilliseconds(5), CPUTime = TimeSpan.FromMilliseconds(4), Priority = 4 });
+            Scheduler.Processes.Add(new Process { PID = 1, ArriveTime = TimeSpan.Zero, CPUTime = TimeSpan.FromMilliseconds(11), Priority = 2 });
+            Scheduler.Processes.Add(new Process { PID = 2, ArriveTime = TimeSpan.FromMilliseconds(5), CPUTime = TimeSpan.FromMilliseconds(28), Priority = 0 });
+            Scheduler.Processes.Add(new Process { PID = 3, ArriveTime = TimeSpan.FromMilliseconds(12), CPUTime = TimeSpan.FromMilliseconds(2), Priority = 3 });
+            Scheduler.Processes.Add(new Process { PID = 4, ArriveTime = TimeSpan.FromMilliseconds(2), CPUTime = TimeSpan.FromMilliseconds(10), Priority = 1 });
+            Scheduler.Processes.Add(new Process { PID = 5, ArriveTime = TimeSpan.FromMilliseconds(9), CPUTime = TimeSpan.FromMilliseconds(16), Priority = 4 });
 
             
             DataContext = this;
