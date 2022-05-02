@@ -32,10 +32,11 @@ namespace CPUScheduling_Sim
 
                 TextBlock cpuTime = new TextBlock();
 
-                cpuTime.Text = $"P{process.PID}\n{process.CPUTime.TotalMilliseconds}ms";
+                cpuTime.Text = $"{process.CPUTime.TotalMilliseconds}ms";
                 cpuTime.HorizontalAlignment = HorizontalAlignment.Center;
                 cpuTime.VerticalAlignment = VerticalAlignment.Center;
                 cpuTime.TextAlignment = TextAlignment.Center;
+                
 
                 TextBlock ct = new TextBlock();
                 ct.HorizontalAlignment = HorizontalAlignment.Right;
@@ -43,9 +44,17 @@ namespace CPUScheduling_Sim
                 ct.Margin = new Thickness(0, 3, 5, 0);
                 ct.Text = $"{Scheduler.FindCompletionTime(processes, i).Milliseconds}";
 
+                TextBlock pid = new TextBlock();
+                pid.HorizontalAlignment = HorizontalAlignment.Left;
+                pid.VerticalAlignment = VerticalAlignment.Bottom;
+                pid.Margin = new Thickness(5, 0, 0, 3);
+                pid.Text = $"P{process.PID}";
+                pid.FontSize = 9;
+
                 grid.Children.Add(rectangle);
                 grid.Children.Add(cpuTime);
                 grid.Children.Add(ct);
+                grid.Children.Add(pid);
 
                 grids.Add(grid);
             }

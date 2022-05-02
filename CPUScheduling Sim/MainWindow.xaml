@@ -43,7 +43,7 @@
         <Button x:Name="clearBtn" Content="Clear List" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Right" Margin="0,263,10,0" VerticalAlignment="Top" Grid.Column="1" Click="clearBtn_Click"/>
         <TextBlock x:Name="avgWaitingTime" Text="Average Waiting Time: " HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,220,0,0"/>
         <TextBlock x:Name="avgTurnAroundTime" Text="Average Turn Around Time: " HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,260,0,0"/>
-        <StackPanel x:Name="processStack" Orientation="Horizontal" Margin="10,353,10,31" Grid.ColumnSpan="2" Width="725"/>
+        <StackPanel x:Name="processStack" Width="725" Orientation="Horizontal" Margin="10,353,10,24" Grid.ColumnSpan="2"/>
         <materialDesign:DialogHost x:Name="addDialogBox" CloseOnClickAway="True" IsOpen="False" Grid.ColumnSpan="2">
             <materialDesign:DialogHost.DialogContent>
                 <Grid Margin="16">
