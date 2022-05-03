@@ -1,7 +1,6 @@
 ﻿using CPUScheduling_Sim.Source;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -12,6 +11,13 @@ namespace CPUScheduling_Sim
     internal class Chart
     {
         private static Dictionary<int, Color> chartColors = new Dictionary<int, Color>();
+
+        /// <summary>
+        /// Generates gantt chart from processes
+        /// </summary>
+        /// <param name="panel">panel in UI</param>
+        /// <param name="processes">processes to generate chart from</param>
+        /// <returns>List of grids representing the gantt chart</returns>
         public static List<Grid> GenerateChart(StackPanel panel, Processes processes)
         {
             List<Grid> grids = new List<Grid>(processes.Count);
@@ -76,16 +82,65 @@ namespace CPUScheduling_Sim
             }
             return grids;
         }
+
+
+        static double currentHue;
+        /// <summary>
+        /// Generates random color palette using the golden ratio scheme
+        /// </summary>
         private static void GenerateColors()
         {
             var processes = Scheduler.Processes;
             var processCount = processes.Count;
+            var random = new Random();
+
+            double goldenRatioConjugate = 0.618033988749895;
+            currentHue = random.NextDouble();
+
             for (int i = chartColors.Count; i < processCount; i++)
             {
-                var random = new Random();
-                Color c = Color.FromRgb((byte)random.Next(200, 255), (byte)random.Next(150, 255), (byte)random.Next(150, 255));
-                chartColors.Add(processes[i].PID, c);
+                chartColors.Add(processes[i].PID, HSLToRGB(currentHue, .8, .75));
+                currentHue += goldenRatioConjugate;
+                currentHue %= 1;
             }
+        }
+
+        private static Color HSLToRGB(double h, double s, double l)
+        {
+            double[] t = new double[] { 0, 0, 0 };
+            byte r = 0;
+            byte g = 0;
+            byte b = 0;
+
+            if (s == 0)
+            {
+                r = g = b = (byte)(l * 255);
+                return Color.FromRgb(r, g, b);
+            }
+
+            double q, p;
+
+            q = l < 0.5 ? l * (1 + s) : l + s - (l * s);
+            p = 2 * l - q;
+
+            t[0] = h + (1.0 / 3.0);
+            t[1] = h;
+            t[2] = h - (1.0 / 3.0);
+
+            for (byte i = 0; i < 3; i++)
+            {
+                t[i] = t[i] < 0 ? t[i] + 1.0 : t[i] > 1 ? t[i] - 1.0 : t[i];
+
+                if (t[i] * 6.0 < 1.0)
+                    t[i] = p + ((q - p) * 6 * t[i]);
+                else if (t[i] * 2.0 < 1.0)
+                    t[i] = q;
+                else if (t[i] * 3.0 < 2.0)
+                    t[i] = p + ((q - p) * 6 * ((2.0 / 3.0) - t[i]));
+                else
+                    t[i] = p;
+            }
+            return Color.FromRgb((byte)(t[0] * 255), (byte)(t[1] * 255), (byte)(t[2] * 255));
         }
         private static Brush PatternBrush()
         {

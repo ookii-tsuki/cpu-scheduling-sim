@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CPUScheduling_Sim.Source
 {
@@ -17,7 +14,17 @@ namespace CPUScheduling_Sim.Source
     }
     internal class Scheduler
     {
+        /// <summary>
+        /// The list of the processes.
+        /// </summary>
         public static Processes Processes { get; set; } = new Processes();
+
+        /// <summary>
+        /// Schedules processes by the given algorithm
+        /// </summary>
+        /// <param name="algorithm">algorithm to be used to schedule the processes</param>
+        /// <returns>Scheduled processes based on the given algorithm</returns>
+        /// <exception cref="NotImplementedException">Thrown when the given algorithm is not implemented</exception>
         public static Processes ScheduleProcesses(Algorithm algorithm) => algorithm switch
         {
             Algorithm.FCFS => FCFSSchedule(),
@@ -29,6 +36,10 @@ namespace CPUScheduling_Sim.Source
             _ => throw new NotImplementedException("Please select a valid algorithm")
         };
 
+        /// <summary>
+        /// Schedule processes based on the FCFS algorithm and calculates the average waiting and turn around time
+        /// </summary>
+        /// <returns>Processes scheduled based on the FCFS algorithm</returns>
         private static Processes FCFSSchedule()
         {
             Processes processes = new Processes();
@@ -56,18 +67,31 @@ namespace CPUScheduling_Sim.Source
             return processes;
         }
 
+        /// <summary>
+        /// Schedule processes based on the Preemptive SJF algorithm and calculates the average waiting and turn around time
+        /// </summary>
+        /// <returns>Processes scheduled based on the Preemptive SJF algorithm</returns>
         private static Processes SJFPreSchedule()
         {
             Processes processes = new Processes();
             // do the sjf preemtive sort and calculate properties
             return processes;
         }
+        /// <summary>
+        /// Schedule processes based on the Non-Preemptive SJF algorithm and calculates the average waiting and turn around time
+        /// </summary>
+        /// <returns>Processes scheduled based on the Non-Preemptive SJF algorithm</returns>
         private static Processes SJFNonPreSchedule()
         {
             Processes processes = new Processes();
             // do the sjf non-preemtive sort and calculate properties
             return processes;
         }
+
+        /// <summary>
+        /// Schedule processes based on the Preemptive Priority algorithm and calculates the average waiting and turn around time
+        /// </summary>
+        /// <returns>Processes scheduled based on the Preemptive Priority algorithm</returns>
         private static Processes PriorityPreSchedule()
         {
             Processes processes = new Processes();
@@ -129,6 +153,11 @@ namespace CPUScheduling_Sim.Source
 
             return final;
         }
+
+        /// <summary>
+        /// Schedule processes based on the Non-Preemptive Priority algorithm and calculates the average waiting and turn around time
+        /// </summary>
+        /// <returns>Processes scheduled based on the Non-Preemptive Priority algorithm</returns>
         private static Processes PriorityNonPreSchedule()
         {
             Processes processes = new Processes();
@@ -142,6 +171,12 @@ namespace CPUScheduling_Sim.Source
             return processes;
         }
 
+        /// <summary>
+        /// Finds the completion time of a processes from a list of processes
+        /// </summary>
+        /// <param name="processes">The list of processes</param>
+        /// <param name="index">The index of the processes in the list</param>
+        /// <returns>The completion time of a processes</returns>
         public static TimeSpan FindCompletionTime(Processes processes, int index)
         {
             TimeSpan completionTime = processes[0].ArriveTime;
@@ -158,19 +193,6 @@ namespace CPUScheduling_Sim.Source
                 }
             }
             return completionTime;
-        }
-        private static Process FindMinPriority(Processes processes, int except)
-        {
-            if (processes.Count == 0)
-                return null;
-            int minPriority = except == 0 ? 1 : 0;
-
-            for (int i = 0; i < processes.Count; i++)
-            {
-                if(i != except && processes[i].Priority < processes[minPriority].Priority)
-                    minPriority = i;
-            }
-            return processes[minPriority];
         }
     }
 }
