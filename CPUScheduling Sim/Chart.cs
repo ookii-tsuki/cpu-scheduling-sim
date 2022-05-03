@@ -23,6 +23,19 @@ namespace CPUScheduling_Sim
             List<Grid> grids = new List<Grid>(processes.Count);
             double totalTime = Scheduler.FindCompletionTime(processes, processes.Count - 1).TotalMilliseconds;
             var offset = Scheduler.FindCompletionTime(processes, 0);
+
+            if(processes[0].ArriveTime != TimeSpan.Zero)
+            {
+                Rectangle rec = new Rectangle();
+                rec.Height = panel.Height;
+                rec.Width = (processes[0].ArriveTime.TotalMilliseconds / totalTime) * (panel.Width - 5);
+                rec.Fill = PatternBrush();
+
+                var blank = new Grid();
+                blank.Children.Add(rec);
+                grids.Add(blank);
+            }
+
             for (int i = 0; i < processes.Count; i++)
             {
                 Process? process = processes[i];
