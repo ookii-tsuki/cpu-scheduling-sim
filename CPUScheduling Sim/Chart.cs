@@ -26,14 +26,8 @@ namespace CPUScheduling_Sim
 
             if(processes[0].ArriveTime != TimeSpan.Zero)
             {
-                Rectangle rec = new Rectangle();
-                rec.Height = panel.Height;
-                rec.Width = (processes[0].ArriveTime.TotalMilliseconds / totalTime) * (panel.Width - 5);
-                rec.Fill = PatternBrush();
-
-                var blank = new Grid();
-                blank.Children.Add(rec);
-                grids.Add(blank);
+                var width = (processes[0].ArriveTime.TotalMilliseconds / totalTime) * (panel.Width - 5);
+                grids.Add(BlankBlock(panel.Height, width));
             }
 
             for (int i = 0; i < processes.Count; i++)
@@ -45,14 +39,8 @@ namespace CPUScheduling_Sim
 
                 if (i > 0 && thisOffset - offset != process.CPUTime)
                 {
-                    Rectangle rec = new Rectangle();
-                    rec.Height = panel.Height;
-                    rec.Width = ((thisOffset - offset - process.CPUTime).TotalMilliseconds / totalTime) * (panel.Width - 5);
-                    rec.Fill = PatternBrush();
-
-                    var blank = new Grid();
-                    blank.Children.Add(rec);
-                    grids.Add(blank);
+                    var width = ((thisOffset - offset - process.CPUTime).TotalMilliseconds / totalTime) * (panel.Width - 5);
+                    grids.Add(BlankBlock(panel.Height, width));
                 }
 
                 Rectangle rectangle = new Rectangle();
@@ -97,7 +85,7 @@ namespace CPUScheduling_Sim
         }
 
 
-        static double currentHue;
+        static double? currentHue = null;
         /// <summary>
         /// Generates random color palette using the golden ratio scheme
         /// </summary>
@@ -105,14 +93,16 @@ namespace CPUScheduling_Sim
         {
             var processes = Scheduler.Processes;
             var processCount = processes.Count;
-            var random = new Random();
 
             double goldenRatioConjugate = 0.618033988749895;
-            currentHue = random.NextDouble();
+            currentHue ??= new Random().NextDouble();
 
-            for (int i = chartColors.Count; i < processCount; i++)
+            for (int i = 0; i < processCount; i++)
             {
-                chartColors.Add(processes[i].PID, HSLToRGB(currentHue, .8, .75));
+                if (chartColors.ContainsKey(processes[i].PID))
+                    continue;
+
+                chartColors.Add(processes[i].PID, HSLToRGB((double)currentHue, .8, .7));
                 currentHue += goldenRatioConjugate;
                 currentHue %= 1;
             }
@@ -154,6 +144,25 @@ namespace CPUScheduling_Sim
                     t[i] = p;
             }
             return Color.FromRgb((byte)(t[0] * 255), (byte)(t[1] * 255), (byte)(t[2] * 255));
+        }
+        private static Grid BlankBlock(double height, double width)
+        {
+            Rectangle[] rec = new Rectangle[2];
+            for (int j = 0; j < rec.Length; j++)
+            {
+                var r = new Rectangle();
+                r.Height = height;
+                r.Width = width;
+                rec[j] = r;
+            }
+            rec[0].Fill = PatternBrush();
+            rec[1].Fill = new SolidColorBrush(Color.FromArgb(20, 0, 0, 0));
+
+            var blank = new Grid();
+            blank.Children.Add(rec[0]);
+            blank.Children.Add(rec[1]);
+
+            return blank;
         }
         private static Brush PatternBrush()
         {
