@@ -74,8 +74,62 @@ namespace CPUScheduling_Sim.Source
         private static Processes SJFPreSchedule()
         {
             Processes processes = new Processes();
-            // do the sjf preemtive sort and calculate properties
-            return processes;
+            Processes final = new Processes();
+            // do the sjf preemptive sort and calculate properties
+            processes.AddRange(((Processes)Processes.Clone()).OrderBy(p => p.ArriveTime));
+
+            var completionTime = FindCompletionTime(processes, processes.Count - 1);
+            var timer = processes[0].ArriveTime;
+            Process current = new Process { PID = processes[0].PID, ArriveTime = timer, CPUTime = TimeSpan.Zero };
+            int i = 0;
+
+            while (timer <= completionTime)
+            {
+                var ms = TimeSpan.FromMilliseconds(1);
+
+                current.CPUTime += ms;
+                processes[i].CPUTime -= ms;
+                timer += ms;
+
+                var next = processes.Find(p => p.CPUTime < processes[i].CPUTime && timer >= p.ArriveTime);
+
+                if (processes[i].CPUTime == TimeSpan.Zero)
+                {
+                    if (processes.Count > 1)
+                        processes.Remove(processes[i]);
+                    next = processes.FindAll(p => timer >= p.ArriveTime).MinBy(p => p.CPUTime);
+                }
+
+                if (next != null)
+                {
+                    final.Add(current);
+
+                    i = processes.IndexOf(next);
+                    current = new Process { PID = processes[i].PID, ArriveTime = timer, CPUTime = TimeSpan.Zero };
+                }
+            }
+            // Calculating Turn around time and waiting time
+            var avgTrTime = TimeSpan.Zero;
+            var avgWtTime = TimeSpan.Zero;
+            for (int j = 0; j < Processes.Count; j++)
+            {
+                var lastExecution = final.FindLast(p => p.PID == Processes[j].PID);
+
+                var ct = lastExecution.ArriveTime + lastExecution.CPUTime;
+                var arrival = Processes[j].ArriveTime;
+                var cpuTime = Processes[j].CPUTime;
+
+                avgTrTime += ct - arrival;
+                avgWtTime += ct - arrival - cpuTime;
+            }
+
+            avgTrTime /= Processes.Count;
+            avgWtTime /= Processes.Count;
+
+            final.AverageTurnAroundTime = avgTrTime;
+            final.AverageWaitingTime = avgWtTime;
+
+            return final;
         }
         /// <summary>
         /// Schedule processes based on the Non-Preemptive SJF algorithm and calculates the average waiting and turn around time
