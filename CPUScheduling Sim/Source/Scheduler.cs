@@ -12,7 +12,7 @@ namespace CPUScheduling_Sim.Source
         PRIORITY_NONPREEMPTIVE,
         ROUND_ROBIN
     }
-    internal class Scheduler
+    internal static class Scheduler
     {
         /// <summary>
         /// The list of the processes.
@@ -46,23 +46,7 @@ namespace CPUScheduling_Sim.Source
 
             processes.AddRange(Processes.OrderBy(p => p.ArriveTime));
 
-            var avgTrTime = TimeSpan.Zero;
-            var avgWtTime = TimeSpan.Zero;
-            for (int i = 0; i < processes.Count; i++)
-            {
-                var ct = FindCompletionTime(processes, i);
-                var arrival = processes[i].ArriveTime;
-                var cpuTime = processes[i].CPUTime;
-
-                avgTrTime += ct - arrival;
-                avgWtTime += ct - arrival - cpuTime;
-            }
-
-            avgTrTime /= processes.Count;
-            avgWtTime /= processes.Count;
-
-            processes.AverageTurnAroundTime = avgTrTime;
-            processes.AverageWaitingTime = avgWtTime;
+            CalculateNonPreAverageTime(processes);
 
             return processes;
         }
@@ -109,25 +93,7 @@ namespace CPUScheduling_Sim.Source
                 }
             }
             // Calculating Turn around time and waiting time
-            var avgTrTime = TimeSpan.Zero;
-            var avgWtTime = TimeSpan.Zero;
-            for (int j = 0; j < Processes.Count; j++)
-            {
-                var lastExecution = final.FindLast(p => p.PID == Processes[j].PID);
-
-                var ct = lastExecution.ArriveTime + lastExecution.CPUTime;
-                var arrival = Processes[j].ArriveTime;
-                var cpuTime = Processes[j].CPUTime;
-
-                avgTrTime += ct - arrival;
-                avgWtTime += ct - arrival - cpuTime;
-            }
-
-            avgTrTime /= Processes.Count;
-            avgWtTime /= Processes.Count;
-
-            final.AverageTurnAroundTime = avgTrTime;
-            final.AverageWaitingTime = avgWtTime;
+            CalculatePreAverageTime(final);
 
             return final;
         }
@@ -184,26 +150,7 @@ namespace CPUScheduling_Sim.Source
                 }
             }
 
-            // Calculating Turn around time and waiting time
-            var avgTrTime = TimeSpan.Zero;
-            var avgWtTime = TimeSpan.Zero;
-            for (int j = 0; j < Processes.Count; j++)
-            {
-                var lastExecution = final.FindLast(p => p.PID == Processes[j].PID);
-
-                var ct = lastExecution.ArriveTime + lastExecution.CPUTime;
-                var arrival = Processes[j].ArriveTime;
-                var cpuTime = Processes[j].CPUTime;
-
-                avgTrTime += ct - arrival;
-                avgWtTime += ct - arrival - cpuTime;
-            }
-
-            avgTrTime /= Processes.Count;
-            avgWtTime /= Processes.Count;
-
-            final.AverageTurnAroundTime = avgTrTime;
-            final.AverageWaitingTime = avgWtTime;
+            CalculatePreAverageTime(final);
 
             return final;
         }
@@ -247,6 +194,59 @@ namespace CPUScheduling_Sim.Source
                 }
             }
             return completionTime;
+        }
+
+        /// <summary>
+        /// Calculates the average waiting and turn around time for non-preemtive algorithms
+        /// </summary>
+        /// <param name="processes">the scheduled processes</param>
+        private static void CalculateNonPreAverageTime(Processes processes)
+        {
+            var avgTrTime = TimeSpan.Zero;
+            var avgWtTime = TimeSpan.Zero;
+            for (int i = 0; i < processes.Count; i++)
+            {
+                var ct = FindCompletionTime(processes, i);
+                var arrival = processes[i].ArriveTime;
+                var cpuTime = processes[i].CPUTime;
+
+                avgTrTime += ct - arrival;
+                avgWtTime += ct - arrival - cpuTime;
+            }
+
+            avgTrTime /= processes.Count;
+            avgWtTime /= processes.Count;
+
+            processes.AverageTurnAroundTime = avgTrTime;
+            processes.AverageWaitingTime = avgWtTime;
+        }
+
+        /// <summary>
+        /// Calculates the average waiting and turn around time for preemtive algorithms
+        /// </summary>
+        /// <param name="processes">the scheduled processes</param>
+        private static void CalculatePreAverageTime(Processes processes)
+        {
+            // Calculating Turn around time and waiting time
+            var avgTrTime = TimeSpan.Zero;
+            var avgWtTime = TimeSpan.Zero;
+            for (int j = 0; j < Processes.Count; j++)
+            {
+                var lastExecution = processes.FindLast(p => p.PID == Processes[j].PID);
+
+                var ct = lastExecution.ArriveTime + lastExecution.CPUTime;
+                var arrival = Processes[j].ArriveTime;
+                var cpuTime = Processes[j].CPUTime;
+
+                avgTrTime += ct - arrival;
+                avgWtTime += ct - arrival - cpuTime;
+            }
+
+            avgTrTime /= Processes.Count;
+            avgWtTime /= Processes.Count;
+
+            processes.AverageTurnAroundTime = avgTrTime;
+            processes.AverageWaitingTime = avgWtTime;
         }
     }
 }
