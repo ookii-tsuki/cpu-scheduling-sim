@@ -43,14 +43,19 @@ namespace CPUScheduling_Sim
                     grids.Add(BlankBlock(panel.Height, width));
                 }
 
-                Rectangle rectangle = new Rectangle();
+                Border block = new Border();
 
-                rectangle.Height = panel.Height;
-                rectangle.Width = (process.CPUTime.TotalMilliseconds / totalTime) * (panel.Width - 5);
+                block.Height = panel.Height;
+                block.Width = (process.CPUTime.TotalMilliseconds / totalTime) * (panel.Width - 5);
                 offset = thisOffset;
 
                 GenerateColors();
-                rectangle.Fill = new SolidColorBrush(chartColors[process.PID]);
+                block.Background = new SolidColorBrush(chartColors[process.PID]);
+
+                if (grids.Count == 0)
+                    block.CornerRadius = new CornerRadius(10, 0, 0, 10);
+                else if(i == processes.Count - 1)
+                    block.CornerRadius = new CornerRadius(0, 10, 10, 0);
 
 
                 TextBlock cpuTime = new TextBlock();
@@ -74,7 +79,7 @@ namespace CPUScheduling_Sim
                 pid.Text = $"P{process.PID}";
                 pid.FontSize = 9;
 
-                grid.Children.Add(rectangle);
+                grid.Children.Add(block);
                 grid.Children.Add(cpuTime);
                 grid.Children.Add(ct);
                 grid.Children.Add(pid);
