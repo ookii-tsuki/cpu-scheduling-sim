@@ -102,7 +102,7 @@ namespace CPUScheduling_Sim
                 if (chartColors.ContainsKey(processes[i].PID))
                     continue;
 
-                chartColors.Add(processes[i].PID, HSLToRGB((double)currentHue, .8, .7));
+                chartColors.Add(processes[i].PID, HSLToRGB((double)currentHue, .9, .75));
                 currentHue += goldenRatioConjugate;
                 currentHue %= 1;
             }

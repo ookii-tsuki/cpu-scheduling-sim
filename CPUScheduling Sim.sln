@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CPUScheduling Sim", "CPUSch
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4A7A8DA1-B454-4318-B05C-B031D1E37B69}"
 	ProjectSection(SolutionItems) = preProject
+		preview-1.jpg = preview-1.jpg
 		README.md = README.md
 	EndProjectSection
 EndProject

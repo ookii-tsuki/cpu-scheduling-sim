@@ -55,8 +55,8 @@
                     <TextBlock Text="Priority (0 is the highest)" FontSize="13" HorizontalAlignment="Left" Margin="0,130,0,0"/>
                     <TextBox x:Name="priorityTB" VerticalAlignment="Top" Margin="0,140,0,0" PreviewKeyDown="addBtn_PreviewKeyDown"></TextBox>
                     <StackPanel Orientation="Horizontal">
-                        <Button x:Name="dialog_AddProcess" Content="Add Process" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left" Margin="10,263,0,0" VerticalAlignment="Bottom" Click="dialog_AddProcess_Click"/>
-                        <Button x:Name="dialog_Cancel" Content="Cancel" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left" Margin="10,263,0,0" VerticalAlignment="Bottom" Click="dialog_Cancel_Click"/>
+                        <Button x:Name="dialog_AddProcess" Content="ADD PROCESS" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left" Margin="10,263,0,0" VerticalAlignment="Bottom" Click="dialog_AddProcess_Click"/>
+                        <Button x:Name="dialog_Cancel" Content="CANCEL" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left" Margin="10,263,0,0" VerticalAlignment="Bottom" Click="dialog_Cancel_Click"/>
                     </StackPanel>
                 </Grid>
             </materialDesign:DialogHost.DialogContent>
