@@ -27,7 +27,12 @@ namespace CPUScheduling_Sim
             if(processes[0].ArriveTime != TimeSpan.Zero)
             {
                 var width = (processes[0].ArriveTime.TotalMilliseconds / totalTime) * (panel.Width - 5);
-                grids.Add(BlankBlock(panel.Height, width));
+                var block = BlankBlock(panel.Height, width);
+                foreach (var border in block.Children)
+                {
+                    ((Border)border).CornerRadius = new CornerRadius(10, 0, 0, 10);
+                }
+                grids.Add(block);
             }
 
             for (int i = 0; i < processes.Count; i++)
@@ -152,16 +157,16 @@ namespace CPUScheduling_Sim
         }
         private static Grid BlankBlock(double height, double width)
         {
-            Rectangle[] rec = new Rectangle[2];
+            Border[] rec = new Border[2];
             for (int j = 0; j < rec.Length; j++)
             {
-                var r = new Rectangle();
+                var r = new Border();
                 r.Height = height;
                 r.Width = width;
                 rec[j] = r;
             }
-            rec[0].Fill = PatternBrush();
-            rec[1].Fill = new SolidColorBrush(Color.FromArgb(20, 0, 0, 0));
+            rec[0].Background = PatternBrush();
+            rec[1].Background = new SolidColorBrush(Color.FromArgb(20, 0, 0, 0));
 
             var blank = new Grid();
             blank.Children.Add(rec[0]);
