@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CPUScheduling_Sim.Source
@@ -104,8 +105,53 @@ namespace CPUScheduling_Sim.Source
         private static Processes SJFNonPreSchedule()
         {
             Processes processes = new Processes();
-            // do the sjf non-preemtive sort and calculate properties
-            return processes;
+            Processes final = new Processes();
+            processes.AddRange(((Processes)Processes.Clone()).OrderBy(p => p.ArriveTime).ThenBy(p => p.Priority));
+
+            var completionTime = FindCompletionTime(processes, processes.Count - 1);
+            var timer = processes[0].ArriveTime;
+            Process current = new Process { PID = processes[0].PID, ArriveTime = timer, CPUTime = TimeSpan.Zero };
+            int i = 0;
+
+            while (timer <= completionTime)
+            {
+
+
+                var ms = TimeSpan.FromMilliseconds(1);
+
+                current.CPUTime += ms;
+                processes[i].CPUTime -= ms;
+                timer += ms;
+
+                if (processes[i].CPUTime > TimeSpan.Zero)
+                    continue;
+
+                processes.Remove(processes[i]);
+
+
+                if (processes.Count == 0)
+                {
+                    final.Add(current);
+                    break;
+                }
+                var next = processes.MinBy(p => p.CPUTime);
+
+
+                if (next != null)
+                {
+                    final.Add(current);
+
+                    i = processes.IndexOf(next);
+                    current = new Process { PID = processes[i].PID, ArriveTime = processes[i].ArriveTime, CPUTime = TimeSpan.Zero };
+                }
+            }
+
+
+            CalculateNonPreAverageTime(final);
+
+            return final;
+
+
         }
 
         /// <summary>
@@ -124,7 +170,7 @@ namespace CPUScheduling_Sim.Source
             Process current = new Process { PID = processes[0].PID, ArriveTime = timer, CPUTime = TimeSpan.Zero };
             int i = 0;
 
-            while(timer <= completionTime)
+            while (timer <= completionTime)
             {
                 var ms = TimeSpan.FromMilliseconds(1);
 
@@ -136,7 +182,7 @@ namespace CPUScheduling_Sim.Source
 
                 if (processes[i].CPUTime == TimeSpan.Zero)
                 {
-                    if(processes.Count > 1)
+                    if (processes.Count > 1)
                         processes.Remove(processes[i]);
                     next = processes.MinBy(p => p.Priority);
                 }
@@ -162,14 +208,121 @@ namespace CPUScheduling_Sim.Source
         private static Processes PriorityNonPreSchedule()
         {
             Processes processes = new Processes();
-            // do the priority non preemptive sort and calculate properties
-            return processes;
+            Processes final = new Processes();
+            // do the priority sort and calculate properties
+            processes.AddRange(((Processes)Processes.Clone()).OrderBy(p => p.ArriveTime).ThenBy(p => p.Priority));
+
+            var completionTime = FindCompletionTime(processes, processes.Count - 1);
+            var timer = processes[0].ArriveTime;
+            Process current = new Process { PID = processes[0].PID, ArriveTime = timer, CPUTime = TimeSpan.Zero };
+            int i = 0;
+
+            while (timer <= completionTime)
+            {
+
+
+                var ms = TimeSpan.FromMilliseconds(1);
+
+                current.CPUTime += ms;
+                processes[i].CPUTime -= ms;
+                timer += ms;
+
+                if (processes[i].CPUTime > TimeSpan.Zero)
+                    continue;
+
+                processes.Remove(processes[i]);
+
+
+                if (processes.Count == 0)
+                {
+                    final.Add(current);
+                    break;
+                }
+                var next = processes.MinBy(p => p.Priority);
+
+
+                if (next != null)
+                {
+                    final.Add(current);
+
+                    i = processes.IndexOf(next);
+                    current = new Process { PID = processes[i].PID, ArriveTime = processes[i].ArriveTime, CPUTime = TimeSpan.Zero };
+                }
+            }
+
+
+            CalculateNonPreAverageTime(final);
+
+            return final;
+
+
         }
         private static Processes RoundRobinSchedule()
         {
             Processes processes = new Processes();
-            // do the roundrobin sort sort and calculate properties
-            return processes;
+            Processes final = new Processes();
+            processes.AddRange(((Processes)Processes.Clone()).OrderBy(p => p.ArriveTime));
+
+            var queue = new Queue<Process>();
+            var quantum = TimeSpan.FromMilliseconds(2);
+            var completionTime = FindCompletionTime(processes, processes.Count - 1);
+            var timer = processes[0].ArriveTime;
+
+            Process current = new Process { PID = processes[0].PID, ArriveTime = timer, CPUTime = TimeSpan.Zero };
+            int i = 0;
+
+            Process instance = processes[0];
+
+
+            while (timer <= completionTime)
+            {
+
+                var ms = TimeSpan.FromMilliseconds(1);
+
+                quantum -= ms;
+
+                current.CPUTime += ms;
+                instance.CPUTime -= ms;
+                timer += ms;
+
+                var next = processes.Find(p => timer == p.ArriveTime);
+                if (next is not null)
+                    queue.Enqueue(next);
+
+                if (quantum == TimeSpan.Zero)
+                {
+                    if (instance.CPUTime != TimeSpan.Zero)
+
+                        queue.Enqueue(instance);
+                    final.Add(current);
+
+                    instance = queue.Dequeue();
+
+                    current = new Process { PID = instance.PID, ArriveTime = timer, CPUTime = TimeSpan.Zero };
+                }
+
+                if (instance.CPUTime == TimeSpan.Zero)
+                {
+                    processes.Remove(instance);
+                    final.Add(current);
+                    if (queue.Count == 0)
+                        break;
+                    instance = queue.Dequeue();
+                    quantum = TimeSpan.FromMilliseconds(2);
+                    current = new Process { PID = instance.PID, ArriveTime = timer, CPUTime = TimeSpan.Zero };
+
+                }
+
+                if (quantum == TimeSpan.Zero)
+                {
+                    quantum = TimeSpan.FromMilliseconds(2);
+                }
+
+            }
+            // Calculating Turn around time and waiting time
+            CalculatePreAverageTime(final);
+
+            return final;
         }
 
         /// <summary>
@@ -182,10 +335,10 @@ namespace CPUScheduling_Sim.Source
         {
             TimeSpan completionTime = processes[0].ArriveTime;
             int i = 0;
-            while(i <= index)
+            while (i <= index)
             {
                 var arrive = processes[i].ArriveTime;
-                if(arrive > completionTime)
+                if (arrive > completionTime)
                     completionTime += arrive - completionTime;
                 else
                 {
