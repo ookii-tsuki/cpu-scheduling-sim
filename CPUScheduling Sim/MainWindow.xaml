@@ -13,7 +13,7 @@
      TextOptions.TextFormattingMode="Ideal"
      TextOptions.TextRenderingMode="Auto"
      Background="{DynamicResource MaterialDesignPaper}"
-     FontFamily="{DynamicResource MaterialDesignFont}" ResizeMode="CanMinimize">
+     FontFamily="{DynamicResource MaterialDesignFont}" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
 
     <Grid>
         <Grid.ColumnDefinitions>
