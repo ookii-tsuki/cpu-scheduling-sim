@@ -46,7 +46,25 @@ namespace CPUScheduling_Sim
             if (Scheduler.Processes.Count == 0)
                 return;
 
-            var processes = Scheduler.ScheduleProcesses((Algorithm)algothimsCB.SelectedIndex);
+            Algorithm algorithm = (Algorithm)algothimsCB.SelectedIndex;
+
+            if(algorithm == Algorithm.ROUND_ROBIN)
+            {
+                timeQuantum.Visibility = Visibility.Visible;
+                timeQuantum.Focus();
+
+                int quantum;
+                if(!int.TryParse(timeQuantum.Text, out quantum) || quantum == 0)
+                {
+                    return;
+                }
+                Scheduler.TimeQuantum = TimeSpan.FromMilliseconds(quantum);
+            }
+            else
+                timeQuantum.Visibility = Visibility.Hidden;
+
+
+            var processes = Scheduler.ScheduleProcesses(algorithm);
 
             if(processStack.Children.Count > 0)
                 processStack.Children.Clear();
@@ -145,6 +163,11 @@ namespace CPUScheduling_Sim
         {
             if(e.Key == Key.Enter)
                 AddProcess();
+        }
+
+        private void timeQuantum_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            Calculate();
         }
     }
 }

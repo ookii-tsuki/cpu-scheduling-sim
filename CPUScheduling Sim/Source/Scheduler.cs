@@ -19,6 +19,7 @@ namespace CPUScheduling_Sim.Source
         /// The list of the processes.
         /// </summary>
         public static Processes Processes { get; set; } = new Processes();
+        public static TimeSpan TimeQuantum { get; set; }
 
         /// <summary>
         /// Schedules processes by the given algorithm
@@ -263,8 +264,8 @@ namespace CPUScheduling_Sim.Source
             Processes final = new Processes();
             processes.AddRange(((Processes)Processes.Clone()).OrderBy(p => p.ArriveTime));
 
-            var queue = new Queue<Process>();
-            var quantum = TimeSpan.FromMilliseconds(2);
+            var readyQueue = new Queue<Process>();
+            var quantum = TimeQuantum;
             var completionTime = FindCompletionTime(processes, processes.Count - 1);
             var timer = processes[0].ArriveTime;
 
@@ -287,16 +288,19 @@ namespace CPUScheduling_Sim.Source
 
                 var next = processes.Find(p => timer == p.ArriveTime);
                 if (next is not null)
-                    queue.Enqueue(next);
+                    readyQueue.Enqueue(next);
 
                 if (quantum == TimeSpan.Zero)
                 {
                     if (instance.CPUTime != TimeSpan.Zero)
+                        readyQueue.Enqueue(instance);
 
-                        queue.Enqueue(instance);
                     final.Add(current);
 
-                    instance = queue.Dequeue();
+                    if (readyQueue.Count == 0)
+                        break;
+
+                    instance = readyQueue.Dequeue();
 
                     current = new Process { PID = instance.PID, ArriveTime = timer, CPUTime = TimeSpan.Zero };
                 }
@@ -305,9 +309,11 @@ namespace CPUScheduling_Sim.Source
                 {
                     processes.Remove(instance);
                     final.Add(current);
-                    if (queue.Count == 0)
+
+                    if (readyQueue.Count == 0)
                         break;
-                    instance = queue.Dequeue();
+
+                    instance = readyQueue.Dequeue();
                     quantum = TimeSpan.FromMilliseconds(2);
                     current = new Process { PID = instance.PID, ArriveTime = timer, CPUTime = TimeSpan.Zero };
 
@@ -315,7 +321,7 @@ namespace CPUScheduling_Sim.Source
 
                 if (quantum == TimeSpan.Zero)
                 {
-                    quantum = TimeSpan.FromMilliseconds(2);
+                    quantum = TimeQuantum;
                 }
 
             }
