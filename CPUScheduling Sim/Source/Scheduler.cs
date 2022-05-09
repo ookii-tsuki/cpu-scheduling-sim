@@ -83,10 +83,17 @@ namespace CPUScheduling_Sim.Source
                 {
                     if (processes.Count > 1)
                         processes.Remove(processes[i]);
+
                     next = processes.FindAll(p => timer >= p.ArriveTime).MinBy(p => p.CPUTime);
+                    while (timer <= completionTime && next is null)
+                    {
+                        timer += ms;
+                        next = processes.FindAll(p => timer >= p.ArriveTime).MinBy(p => p.CPUTime);
+                    }
+
                 }
 
-                if (next != null)
+                if (next is not null)
                 {
                     final.Add(current);
 
@@ -220,8 +227,6 @@ namespace CPUScheduling_Sim.Source
 
             while (timer <= completionTime)
             {
-
-
                 var ms = TimeSpan.FromMilliseconds(1);
 
                 current.CPUTime += ms;
@@ -286,9 +291,11 @@ namespace CPUScheduling_Sim.Source
                 instance.CPUTime -= ms;
                 timer += ms;
 
-                var next = processes.Find(p => timer == p.ArriveTime);
-                if (next is not null)
-                    readyQueue.Enqueue(next);
+                var next = processes.FindAll(p => timer == p.ArriveTime);
+                foreach (var process in next)
+                {
+                    readyQueue.Enqueue(process);
+                }
 
                 if (quantum == TimeSpan.Zero)
                 {
@@ -310,11 +317,19 @@ namespace CPUScheduling_Sim.Source
                     processes.Remove(instance);
                     final.Add(current);
 
-                    if (readyQueue.Count == 0)
+
+                    while(timer <= completionTime && readyQueue.Count == 0 && processes.Count > 0)
+                    {
+                        timer += ms;
+                        next = processes.FindAll(p => timer == p.ArriveTime);
+                        foreach(var process in next)
+                            readyQueue.Enqueue(process);
+                    }
+                    if (timer >= completionTime)
                         break;
 
                     instance = readyQueue.Dequeue();
-                    quantum = TimeSpan.FromMilliseconds(2);
+                    quantum = TimeQuantum;
                     current = new Process { PID = instance.PID, ArriveTime = timer, CPUTime = TimeSpan.Zero };
 
                 }
