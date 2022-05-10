@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
 namespace CPUScheduling_Sim
@@ -44,18 +45,37 @@ namespace CPUScheduling_Sim
 
                 if (i > 0 && thisOffset - offset != process.CPUTime)
                 {
-                    var width = ((thisOffset - offset - process.CPUTime).TotalMilliseconds / totalTime) * (panel.Width - 5);
-                    grids.Add(BlankBlock(panel.Height, width));
+                    var _width = ((thisOffset - offset - process.CPUTime).TotalMilliseconds / totalTime) * (panel.Width - 5);
+                    grids.Add(BlankBlock(panel.Height, _width));
                 }
 
                 Border block = new Border();
 
                 block.Height = panel.Height;
-                block.Width = (process.CPUTime.TotalMilliseconds / totalTime) * (panel.Width - 5);
+                var width = (process.CPUTime.TotalMilliseconds / totalTime) * (panel.Width - 5);
                 offset = thisOffset;
 
+                DoubleAnimation widthAnimation = new DoubleAnimation();
+                widthAnimation.From = 0;
+                widthAnimation.To = width;
+                widthAnimation.EasingFunction = new QuinticEase();
+                widthAnimation.Duration = new Duration(TimeSpan.FromSeconds(.5));
+
+                block.BeginAnimation(Border.WidthProperty, widthAnimation);
+
                 GenerateColors();
-                block.Background = new SolidColorBrush(chartColors[process.PID]);
+
+                ColorAnimation chartColorAnimation = new ColorAnimation();
+                chartColorAnimation.From = Colors.Transparent;
+                chartColorAnimation.To = chartColors[process.PID];
+                chartColorAnimation.EasingFunction = new QuinticEase();
+                chartColorAnimation.Duration = new Duration(TimeSpan.FromSeconds(.3));
+
+                //block.Background = new SolidColorBrush(chartColors[process.PID]);
+                var brush = new SolidColorBrush(Colors.Transparent);
+                brush.BeginAnimation(SolidColorBrush.ColorProperty, chartColorAnimation);
+
+                block.Background = brush;
 
                 if (grids.Count == 0)
                     block.CornerRadius = new CornerRadius(10, 0, 0, 10);
@@ -69,7 +89,6 @@ namespace CPUScheduling_Sim
                 cpuTime.HorizontalAlignment = HorizontalAlignment.Center;
                 cpuTime.VerticalAlignment = VerticalAlignment.Center;
                 cpuTime.TextAlignment = TextAlignment.Center;
-
 
                 TextBlock ct = new TextBlock();
                 ct.HorizontalAlignment = HorizontalAlignment.Right;
