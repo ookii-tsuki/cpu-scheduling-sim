@@ -71,7 +71,6 @@ namespace CPUScheduling_Sim
                 chartColorAnimation.EasingFunction = new QuinticEase();
                 chartColorAnimation.Duration = new Duration(TimeSpan.FromSeconds(.3));
 
-                //block.Background = new SolidColorBrush(chartColors[process.PID]);
                 var brush = new SolidColorBrush(Colors.Transparent);
                 brush.BeginAnimation(SolidColorBrush.ColorProperty, chartColorAnimation);
 
