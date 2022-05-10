@@ -176,11 +176,18 @@ namespace CPUScheduling_Sim
         private static Grid BlankBlock(double height, double width)
         {
             Border[] rec = new Border[2];
+
+            DoubleAnimation widthAnimation = new DoubleAnimation();
+            widthAnimation.From = 0;
+            widthAnimation.To = width;
+            widthAnimation.EasingFunction = new QuinticEase();
+            widthAnimation.Duration = new Duration(TimeSpan.FromSeconds(.5));
+
             for (int j = 0; j < rec.Length; j++)
             {
                 var r = new Border();
                 r.Height = height;
-                r.Width = width;
+                r.BeginAnimation(Border.WidthProperty, widthAnimation);
                 rec[j] = r;
             }
             rec[0].Background = PatternBrush();
