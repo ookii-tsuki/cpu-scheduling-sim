@@ -275,8 +275,6 @@ namespace CPUScheduling_Sim.Source
             var timer = processes[0].ArriveTime;
 
             Process current = new Process { PID = processes[0].PID, ArriveTime = timer, CPUTime = TimeSpan.Zero };
-            int i = 0;
-
             Process instance = processes[0];
 
 
@@ -304,7 +302,14 @@ namespace CPUScheduling_Sim.Source
 
                     final.Add(current);
 
-                    if (readyQueue.Count == 0)
+                    while (timer <= completionTime && readyQueue.Count == 0 && processes.Count > 0)
+                    {
+                        timer += ms;
+                        next = processes.FindAll(p => timer == p.ArriveTime);
+                        foreach (var process in next)
+                            readyQueue.Enqueue(process);
+                    }
+                    if (timer >= completionTime)
                         break;
 
                     instance = readyQueue.Dequeue();
