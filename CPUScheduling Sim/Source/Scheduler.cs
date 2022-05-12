@@ -127,9 +127,9 @@ namespace CPUScheduling_Sim.Source
 
                 var ms = TimeSpan.FromMilliseconds(1);
 
+                timer += ms;
                 current.CPUTime += ms;
                 processes[i].CPUTime -= ms;
-                timer += ms;
 
                 if (processes[i].CPUTime > TimeSpan.Zero)
                     continue;
@@ -142,10 +142,14 @@ namespace CPUScheduling_Sim.Source
                     final.Add(current);
                     break;
                 }
-                var next = processes.MinBy(p => p.CPUTime);
+                var next = processes.FindAll(p => timer >= p.ArriveTime).MinBy(p => p.CPUTime);
+                while (timer <= completionTime && next is null)
+                {
+                    timer += ms;
+                    next = processes.FindAll(p => timer >= p.ArriveTime).MinBy(p => p.CPUTime);
+                }
 
-
-                if (next != null)
+                if (next is not null)
                 {
                     final.Add(current);
 
@@ -192,10 +196,15 @@ namespace CPUScheduling_Sim.Source
                 {
                     if (processes.Count > 1)
                         processes.Remove(processes[i]);
-                    next = processes.MinBy(p => p.Priority);
+                    next = processes.FindAll(p => timer >= p.ArriveTime).MinBy(p => p.Priority);
+                    while (timer <= completionTime && next is null)
+                    {
+                        timer += ms;
+                        next = processes.FindAll(p => timer >= p.ArriveTime).MinBy(p => p.Priority);
+                    }
                 }
 
-                if (next != null)
+                if (next is not null)
                 {
                     final.Add(current);
 
