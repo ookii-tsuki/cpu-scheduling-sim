@@ -63,18 +63,24 @@ namespace CPUScheduling_Sim
             else
                 timeQuantum.Visibility = Visibility.Hidden;
 
+            try
+            {
+                var processes = Scheduler.ScheduleProcesses(algorithm);
 
-            var processes = Scheduler.ScheduleProcesses(algorithm);
+                if (processStack.Children.Count > 0)
+                    processStack.Children.Clear();
 
-            if(processStack.Children.Count > 0)
-                processStack.Children.Clear();
+                var chart = Chart.GenerateChart(processStack, processes);
+                foreach (var item in chart)
+                    processStack.Children.Add(item);
 
-            var chart = Chart.GenerateChart(processStack, processes);
-            foreach (var item in chart)
-                processStack.Children.Add(item);
-
-            avgWaitingTime.Text = $"Average Waiting Time: {processes.AverageWaitingTime.TotalMilliseconds}ms";
-            avgTurnAroundTime.Text = $"Average Turn Around Time: { processes.AverageTurnAroundTime.TotalMilliseconds}ms";
+                avgWaitingTime.Text = $"Average Waiting Time: {processes.AverageWaitingTime.TotalMilliseconds}ms";
+                avgTurnAroundTime.Text = $"Average Turn Around Time: { processes.AverageTurnAroundTime.TotalMilliseconds}ms";
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void addProcess_Click(object sender, RoutedEventArgs e)
