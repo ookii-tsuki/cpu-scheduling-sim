@@ -62,7 +62,7 @@ namespace CPUScheduling_Sim.Source
             Processes processes = new Processes();
             Processes final = new Processes();
             // do the sjf preemptive sort and calculate properties
-            processes.AddRange(((Processes)Processes.Clone()).OrderBy(p => p.ArriveTime));
+            processes.AddRange(((Processes)Processes.Clone()).OrderBy(p => p.ArriveTime).ThenBy(p => p.CPUTime));
 
             var completionTime = FindCompletionTime(processes, processes.Count - 1);
             var timer = processes[0].ArriveTime;
@@ -114,7 +114,7 @@ namespace CPUScheduling_Sim.Source
         {
             Processes processes = new Processes();
             Processes final = new Processes();
-            processes.AddRange(((Processes)Processes.Clone()).OrderBy(p => p.ArriveTime).ThenBy(p => p.Priority));
+            processes.AddRange(((Processes)Processes.Clone()).OrderBy(p => p.ArriveTime).ThenBy(p => p.CPUTime));
 
             var completionTime = FindCompletionTime(processes, processes.Count - 1);
             var timer = processes[0].ArriveTime;
@@ -253,7 +253,12 @@ namespace CPUScheduling_Sim.Source
                     final.Add(current);
                     break;
                 }
-                var next = processes.MinBy(p => p.Priority);
+                var next = processes.FindAll(p => timer >= p.ArriveTime).MinBy(p => p.Priority);
+                while (timer <= completionTime && next is null)
+                {
+                    timer += ms;
+                    next = processes.FindAll(p => timer >= p.ArriveTime).MinBy(p => p.Priority);
+                }
 
 
                 if (next != null)
@@ -284,7 +289,14 @@ namespace CPUScheduling_Sim.Source
             var timer = processes[0].ArriveTime;
 
             Process current = new Process { PID = processes[0].PID, ArriveTime = timer, CPUTime = TimeSpan.Zero };
-            Process instance = processes[0];
+
+            var next = processes.FindAll(p => timer == p.ArriveTime);
+            foreach (var process in next)
+            {
+                readyQueue.Enqueue(process);
+            }
+
+            Process instance = readyQueue.Dequeue();
 
 
             while (timer <= completionTime)
@@ -298,7 +310,7 @@ namespace CPUScheduling_Sim.Source
                 instance.CPUTime -= ms;
                 timer += ms;
 
-                var next = processes.FindAll(p => timer == p.ArriveTime);
+                next = processes.FindAll(p => timer == p.ArriveTime);
                 foreach (var process in next)
                 {
                     readyQueue.Enqueue(process);
@@ -308,6 +320,8 @@ namespace CPUScheduling_Sim.Source
                 {
                     if (instance.CPUTime != TimeSpan.Zero)
                         readyQueue.Enqueue(instance);
+                    else
+                        processes.Remove(instance);
 
                     final.Add(current);
 
